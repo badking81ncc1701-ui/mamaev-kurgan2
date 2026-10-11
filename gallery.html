@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Галерея — Мамаев Курган</title>
+    <meta name="description" content="Фотогалерея мемориального комплекса на Мамаевом Кургане: монументы, скульптуры, панорамы.">
+    <link rel="canonical" href="https://example.com/gallery.html">
+
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="ru_RU">
+    <meta property="og:title" content="Галерея — Мамаев Курган">
+    <meta property="og:description" content="Фотографии мемориального комплекса.">
+    <meta property="og:image" content="img/og-preview.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:url" content="https://example.com/gallery.html">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Галерея — Мамаев Курган">
+    <meta name="twitter:description" content="Фото мемориала.">
+    <meta name="twitter:image" content="img/og-preview.jpg">
+
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="style.css">
+    <style> body { --bg-image: url("img/6.jpg"); } </style>
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Перейти к основному содержанию</a>
+
+<header>
+    <a href="index.html" class="logo">Мамаев Курган</a>
+    <button class="burger" aria-label="Открыть меню" aria-expanded="false" aria-controls="main-nav">
+        <span></span><span></span><span></span>
+    </button>
+    <nav id="main-nav" aria-label="Основная навигация">
+        <ul>
+            <li><a href="index.html">Главная</a></li>
+            <li><a href="about.html">О создателе</a></li>
+            <li><a href="history-creation.html">История создания</a></li>
+            <li><a href="history-opening.html">История открытия</a></li>
+            <li><a href="gallery.html" class="active">Галерея</a></li>
+            <li><a href="map.html">Карта</a></li>
+            <li><a href="heroes.html">Герои</a></li>
+            <li><a href="facts.html">Факты</a></li>
+        </ul>
+    </nav>
+    <button class="theme-toggle" aria-label="Переключить тему" title="Сменить тему">☀️</button>
+</header>
+
+<div class="menu-overlay"></div>
+
+<main id="main-content">
+    <h1 class="reveal">Галерея</h1>
+    <p class="reveal">Нажмите на фотографию, чтобы открыть её в полном размере. Используйте стрелки ← → или свайпы для переключения.</p>
+
+    <div class="gallery reveal">
+        <button class="gallery-item" data-full="img/gallery/1.jpg" aria-label="Открыть фото: Родина-мать">
+            <img src="img/gallery/1.jpg" alt="Монумент «Родина-мать зовёт!»" loading="lazy">
+        </button>
+        <button class="gallery-item" data-full="img/gallery/2.jpg" aria-label="Открыть фото: Площадь Скорби">
+            <img src="img/gallery/2.jpg" alt="Площадь Скорби" loading="lazy">
+        </button>
+        <button class="gallery-item" data-full="img/gallery/3.jpg" aria-label="Открыть фото: Зал Воинской Славы">
+            <img src="img/gallery/3.jpg" alt="Зал Воинской Славы" loading="lazy">
+        </button>
+        <button class="gallery-item" data-full="img/gallery/4.jpg" aria-label="Открыть фото: Стены-руины">
+            <img src="img/gallery/4.jpg" alt="Стены-руины" loading="lazy">
+        </button>
+        <button class="gallery-item" data-full="img/gallery/5.jpg" aria-label="Открыть фото: Площадь «Стоять насмерть!»">
+            <img src="img/gallery/5.jpg" alt="Площадь «Стоять насмерть!»" loading="lazy">
+        </button>
+        <button class="gallery-item" data-full="img/gallery/6.jpg" aria-label="Открыть фото: Площадь Героев">
+            <img src="img/gallery/6.jpg" alt="Площадь Героев" loading="lazy">
+        </button>
+        <button class="gallery-item" data-full="img/gallery/7.jpg" aria-label="Открыть фото: Аллея пирамидальных тополей">
+            <img src="img/gallery/7.jpg" alt="Аллея пирамидальных тополей" loading="lazy">
+        </button>
+        <button class="gallery-item" data-full="img/gallery/8.jpg" aria-label="Открыть фото: Вводная композиция «Память поколений»">
+            <img src="img/gallery/8.jpg" alt="Вводная композиция «Память поколений»" loading="lazy">
+        </button>
+        <button class="gallery-item" data-full="img/gallery/9.jpg" aria-label="Открыть фото: Вечный огонь">
+            <img src="img/gallery/9.jpg" alt="Вечный огонь" loading="lazy">
+        </button>
+        <button class="gallery-item" data-full="img/gallery/10.jpg" aria-label="Открыть фото: Панорама Мамаева Кургана">
+            <img src="img/gallery/10.jpg" alt="Панорама Мамаева Кургана" loading="lazy">
+        </button>
+        <button class="gallery-item" data-full="img/gallery/11.jpg" aria-label="Открыть фото: Скульптура «Скорбящая мать»">
+            <img src="img/gallery/11.jpg" alt="Скульптура «Скорбящая мать»" loading="lazy">
+        </button>
+        <button class="gallery-item" data-full="img/gallery/12.jpg" aria-label="Открыть фото: Ночной вид монумента">
+            <img src="img/gallery/12.jpg" alt="Ночной вид монумента" loading="lazy">
+        </button>
+    </div>
+</main>
+
+<!-- Лайтбокс -->
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Просмотр изображения">
+    <button class="lightbox-close" aria-label="Закрыть">✕</button>
+    <button class="lightbox-prev" aria-label="Предыдущее фото">‹</button>
+    <img src="" alt="">
+    <button class="lightbox-next" aria-label="Следующее фото">›</button>
+</div>
+
+<footer>© Мамаев Курган · Мемориальный комплекс героям Сталинградской битвы</footer>
+<script src="script.js"></script>
+</body>
+</html>

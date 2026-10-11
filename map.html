@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Карта комплекса — Мамаев Курган</title>
+    <meta name="description" content="Схема расположения объектов мемориального комплекса на Мамаевом Кургане. GPS-координаты, часы работы, интерактивная карта.">
+    <link rel="canonical" href="https://example.com/map.html">
+
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="ru_RU">
+    <meta property="og:title" content="Карта комплекса — Мамаев Курган">
+    <meta property="og:description" content="Схема объектов мемориала, GPS-координаты и часы работы.">
+    <meta property="og:image" content="img/og-preview.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:url" content="https://example.com/map.html">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Карта комплекса — Мамаев Курган">
+    <meta name="twitter:description" content="Схема объектов мемориала.">
+    <meta name="twitter:image" content="img/og-preview.jpg">
+
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { --bg-image: url("img/4.jpg"); }
+
+        /* ---------- Блок с информацией ---------- */
+        .info-block {
+            max-width: 700px;
+            margin: 25px auto;
+            background: var(--card-bg);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 22px 28px;
+            text-align: left;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(4px);
+        }
+
+        .info-block h2 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+            color: var(--accent);
+            text-shadow: none;
+        }
+
+        .info-block h2:not(:first-child) { margin-top: 25px; }
+
+        .info-block p {
+            margin: 8px 0;
+            font-size: 1.05em;
+            text-align: left;
+            text-shadow: none;
+        }
+
+        .info-block strong { color: var(--accent); }
+
+        .info-block .coord-link {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 16px;
+            background: var(--accent);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 0.95em;
+            transition: opacity 0.25s ease, transform 0.2s ease;
+        }
+
+        .info-block .coord-link:hover,
+        .info-block .coord-link:focus-visible {
+            opacity: 0.85;
+            transform: translateY(-2px);
+            outline: none;
+        }
+
+        /* ---------- Яндекс.Карта ---------- */
+        .yandex-map-wrapper {
+            max-width: 900px;
+            width: 100%;
+            margin: 25px auto;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid var(--border-color);
+            box-shadow: var(--shadow);
+        }
+
+        .yandex-map-wrapper iframe {
+            display: block;
+            width: 100%;
+            height: 400px;
+            border: none;
+        }
+
+        /* ---------- Обновлённая схема ---------- */
+        .map-scheme {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            aspect-ratio: 3 / 4;
+            margin: 30px auto;
+            background:
+                /* Дорожка-маршрут (снизу вверх) */
+                linear-gradient(180deg,
+                    transparent 4%,
+                    rgba(255, 255, 255, 0.15) 4%,
+                    rgba(255, 255, 255, 0.15) 96%,
+                    transparent 96%) 50% 0 / 4px 100% no-repeat,
+                /* Общий фон склона */
+                linear-gradient(180deg,
+                    #6b8a5a 0%,
+                    #567247 25%,
+                    #4a6b3a 50%,
+                    #3e5a30 75%,
+                    #7a6b4a 100%);
+            border-radius: 14px;
+            border: 3px solid var(--border-color);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        /* Дорожка-маршрут — пунктирная */
+        .map-route {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Точка объекта */
+        .map-point {
+            position: absolute;
+            width: 34px;
+            height: 34px;
+            background: var(--accent);
+            border: 3px solid #fff;
+            border-radius: 50%;
+            cursor: pointer;
+            transform: translate(-50%, -50%);
+            transition: transform 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
+            box-shadow: 0 0 0 0 rgba(255, 59, 59, 0.7), 0 3px 8px rgba(0, 0, 0, 0.5);
+            animation: pulse 2.4s infinite;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 15px;
+            color: #fff;
+            z-index: 3;
+            font-family: Arial, sans-serif;
+        }
+
+        .map-point:hover,
+        .map-point:focus-visible,
+        .map-point.active {
+            transform: translate(-50%, -50%) scale(1.25);
+            outline: none;
+            animation-play-state: paused;
+            background: #ffcc00;
+            color: #000;
+            box-shadow: 0 0 0 0 rgba(255, 204, 0, 0.9), 0 4px 12px rgba(0, 0, 0, 0.6);
+        }
+
+        @keyframes pulse {
+            0%   { box-shadow: 0 0 0 0 rgba(255, 59, 59, 0.7), 0 3px 8px rgba(0, 0, 0, 0.5); }
+            70%  { box-shadow: 0 0 0 16px rgba(255, 59, 59, 0), 0 3px 8px rgba(0, 0, 0, 0.5); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 59, 59, 0), 0 3px 8px rgba(0, 0, 0, 0.5); }
+        }
+
+        /* Всплывающая подпись */
+        .map-point .map-tooltip {
+            position: absolute;
+            bottom: calc(100% + 14px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.92);
+            color: #fff;
+            padding: 8px 14px;
+            border-radius: 6px;
+            font-size: 13px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+            font-weight: bold;
+            border: 1px solid var(--accent);
+            z-index: 10;
+        }
+
+        .map-point .map-tooltip::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 6px solid transparent;
+            border-top-color: rgba(0, 0, 0, 0.92);
+        }
+
+        .map-point:hover .map-tooltip,
+        .map-point:focus-visible .map-tooltip,
+        .map-point.active .map-tooltip { opacity: 1; }
+
+        /* Подписи зон на схеме */
+        .map-zone-label {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.55);
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            pointer-events: none;
+            z-index: 2;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+        }
+
+        /* Легенда */
+        .map-legend {
+            max-width: 700px;
+            margin: 20px auto;
+            text-align: left;
+            background: var(--card-bg);
+            padding: 20px 25px;
+            border-radius: 10px;
+            border: 2px solid var(--border-color);
+            font-size: 1em;
+        }
+
+        .map-legend ol {
+            padding-left: 0;
+            margin: 0;
+            list-style: none;
+            counter-reset: legend-counter;
+        }
+
+        .map-legend li {
+            counter-increment: legend-counter;
+            padding: 8px 10px 8px 46px;
+            position: relative;
+            margin-bottom: 4px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            font-size: 1.02em;
+        }
+
+        .map-legend li::before {
+            content: counter(legend-counter);
+            position: absolute;
+            left: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 26px;
+            height: 26px;
+            background: var(--accent);
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 13px;
+            border: 2px solid #fff;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+
+        .map-legend li:hover,
+        .map-legend li:focus-visible,
+        .map-legend li.active {
+            background: rgba(255, 255, 255, 0.1);
+            outline: none;
+        }
+
+        .map-legend li:hover::before,
+        .map-legend li:focus-visible::before,
+        .map-legend li.active::before {
+            background: #ffcc00;
+            color: #000;
+        }
+
+        @media (max-width: 768px) {
+            .info-block { padding: 18px 20px; }
+            .yandex-map-wrapper iframe { height: 300px; }
+            .map-point { width: 28px; height: 28px; font-size: 13px; }
+            .map-zone-label { font-size: 10px; }
+            .map-legend li { font-size: 0.95em; padding-left: 42px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .map-point { animation: none; }
+        }
+    </style>
+</head>
+<body>
+
+<a href="#main-content" class="skip-link">Перейти к основному содержанию</a>
+
+<header>
+    <a href="index.html" class="logo">Мамаев Курган</a>
+    <button class="burger" aria-label="Открыть меню" aria-expanded="false" aria-controls="main-nav">
+        <span></span><span></span><span></span>
+    </button>
+    <nav id="main-nav" aria-label="Основная навигация">
+        <ul>
+            <li><a href="index.html">Главная</a></li>
+            <li><a href="about.html">О создателе</a></li>
+            <li><a href="history-creation.html">История создания</a></li>
+            <li><a href="history-opening.html">История открытия</a></li>
+            <li><a href="gallery.html">Галерея</a></li>
+            <li><a href="map.html" class="active">Карта</a></li>
+            <li><a href="heroes.html">Герои</a></li>
+            <li><a href="facts.html">Факты</a></li>
+        </ul>
+    </nav>
+    <button class="theme-toggle" aria-label="Переключить тему" title="Сменить тему">☀️</button>
+</header>
+
+<div class="menu-overlay"></div>
+
+<main id="main-content">
+    <h1 class="reveal">Карта комплекса</h1>
+
+    <!-- GPS и часы работы -->
+    <div class="info-block reveal">
+        <h2>📍 GPS-координаты</h2>
+        <p><strong>Широта:</strong> 48.74242° N</p>
+        <p><strong>Долгота:</strong> 44.53694° E</p>
+        <a class="coord-link"
+           href="https://yandex.ru/maps/?pt=44.53694,48.74242&z=16&l=map"
+           target="_blank"
+           rel="noopener">
+            Открыть в Яндекс.Картах →
+        </a>
+
+        <h2>🕒 Режим работы</h2>
+        <p><strong>Территория мемориала:</strong> круглосуточно, без выходных</p>
+        <p><strong>Экскурсии:</strong> ежедневно с 9:00 до 15:30</p>
+        <p><strong>Вход:</strong> бесплатный для всех категорий граждан</p>
+    </div>
+
+    <!-- Яндекс.Карта -->
+    <h2 class="reveal">🗺️ На карте Волгограда</h2>
+    <div class="yandex-map-wrapper reveal">
+        <iframe
+            src="https://yandex.ru/map-widget/v1/?ll=44.53694%2C48.74242&z=15&pt=44.53694,48.74242,pm2rdm&lang=ru_RU"
+            title="Мамаев Курган на карте Волгограда"
+            loading="lazy"
+            allowfullscreen>
+        </iframe>
+    </div>
+
+    <!-- Схема комплекса -->
+    <h2 class="reveal">📋 Схема объектов комплекса</h2>
+    <p class="reveal">
+        Наведите курсор на точку или нажмите на пункт списка — соответствующий объект подсветится.
+        Маршрут посетителя идёт снизу вверх: от входа к вершине кургана.
+    </p>
+
+    <div class="map-scheme reveal" role="img" aria-label="Схема мемориального комплекса на Мамаевом Кургане">
+        <!-- Линия маршрута -->
+        <svg class="map-route" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+            <!-- Основной маршрут снизу вверх: точки 1→2→3→4→5→6→7→9 -->
+            <polyline points="50,6 50,16 50,27 50,38 50,49 50,60 50,71 50,92"
+                      fill="none" stroke="rgba(255,255,255,0.35)"
+                      stroke-width="0.6" stroke-dasharray="2,1.5"/>
+            <!-- Ответвление к кладбищу: 7→8 -->
+            <polyline points="50,71 35,82"
+                      fill="none" stroke="rgba(255,255,255,0.35)"
+                      stroke-width="0.6" stroke-dasharray="2,1.5"/>
+        </svg>
+
+        <!-- Зоны на фоне -->
+        <span class="map-zone-label" style="top: 22%; left: 4%;">Вход</span>
+        <span class="map-zone-label" style="top: 47%; left: 4%;">Ансамбль</span>
+        <span class="map-zone-label" style="top: 80%; left: 4%;">Вершина</span>
+
+        <!-- Точки объектов -->
+        <button class="map-point" data-point="1" style="top: 6%; left: 50%;" aria-label="Вводная композиция «Память поколений»">
+            1
+            <span class="map-tooltip">1. Память поколений</span>
+        </button>
+        <button class="map-point" data-point="2" style="top: 16%; left: 50%;" aria-label="Аллея пирамидальных тополей">
+            2
+            <span class="map-tooltip">2. Аллея пирамидальных тополей</span>
+        </button>
+        <button class="map-point" data-point="3" style="top: 27%; left: 50%;" aria-label="Площадь «Стоять насмерть!»">
+            3
+            <span class="map-tooltip">3. Площадь «Стоять насмерть!»</span>
+        </button>
+        <button class="map-point" data-point="4" style="top: 38%; left: 50%;" aria-label="Стены-руины">
+            4
+            <span class="map-tooltip">4. Стены-руины</span>
+        </button>
+        <button class="map-point" data-point="5" style="top: 49%; left: 50%;" aria-label="Площадь Героев">
+            5
+            <span class="map-tooltip">5. Площадь Героев</span>
+        </button>
+        <button class="map-point" data-point="6" style="top: 60%; left: 50%;" aria-label="Зал Воинской Славы">
+            6
+            <span class="map-tooltip">6. Зал Воинской Славы</span>
+        </button>
+        <button class="map-point" data-point="7" style="top: 71%; left: 50%;" aria-label="Площадь Скорби">
+            7
+            <span class="map-tooltip">7. Площадь Скорби</span>
+        </button>
+        <button class="map-point" data-point="8" style="top: 82%; left: 35%;" aria-label="Воинское мемориальное кладбище">
+            8
+            <span class="map-tooltip">8. Воинское мемориальное кладбище</span>
+        </button>
+        <button class="map-point" data-point="9" style="top: 92%; left: 50%;" aria-label="Монумент «Родина-мать зовёт!»">
+            9
+            <span class="map-tooltip">9. Монумент «Родина-мать зовёт!»</span>
+        </button>
+    </div>
+
+    <!-- Легенда -->
+    <div class="map-legend reveal">
+        <ol>
+            <li data-point="1" tabindex="0">Вводная композиция «Память поколений»</li>
+            <li data-point="2" tabindex="0">Аллея пирамидальных тополей</li>
+            <li data-point="3" tabindex="0">Площадь «Стоять насмерть!»</li>
+            <li data-point="4" tabindex="0">Стены-руины</li>
+            <li data-point="5" tabindex="0">Площадь Героев</li>
+            <li data-point="6" tabindex="0">Зал Воинской Славы</li>
+            <li data-point="7" tabindex="0">Площадь Скорби</li>
+            <li data-point="8" tabindex="0">Воинское мемориальное кладбище</li>
+            <li data-point="9" tabindex="0">Монумент «Родина-мать зовёт!»</li>
+        </ol>
+    </div>
+</main>
+
+<footer>© Мамаев Курган · Мемориальный комплекс героям Сталинградской битвы</footer>
+<script src="script.js"></script>
+<script>
+    /* Связываем точки на схеме и пункты легенды */
+    (function () {
+        const points = document.querySelectorAll('.map-point');
+        const items = document.querySelectorAll('.map-legend li');
+
+        function highlight(id, on) {
+            points.forEach(p => {
+                if (p.dataset.point === id) p.classList.toggle('active', on);
+            });
+            items.forEach(i => {
+                if (i.dataset.point === id) i.classList.toggle('active', on);
+            });
+        }
+
+        // Наведение / фокус на точку
+        points.forEach(p => {
+            const id = p.dataset.point;
+            p.addEventListener('mouseenter', () => highlight(id, true));
+            p.addEventListener('mouseleave', () => highlight(id, false));
+            p.addEventListener('focus', () => highlight(id, true));
+            p.addEventListener('blur', () => highlight(id, false));
+        });
+
+        // Наведение / фокус на пункт списка
+        items.forEach(i => {
+            const id = i.dataset.point;
+            i.addEventListener('mouseenter', () => highlight(id, true));
+            i.addEventListener('mouseleave', () => highlight(id, false));
+            i.addEventListener('focus', () => highlight(id, true));
+            i.addEventListener('blur', () => highlight(id, false));
+        });
+    })();
+</script>
+</body>
+</html>
